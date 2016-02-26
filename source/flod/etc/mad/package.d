@@ -1,6 +1,7 @@
 module flod.etc.mad;
 
-/* -> pull source, push sink -> */
+import flod.traits;
+
 struct MadDecoder(Source, Sink) {
 	import deimos.mad;
 
@@ -106,3 +107,5 @@ struct MadDecoder(Source, Sink) {
 			throw md.exception;
 	}
 }
+static assert(isPeekSink!MadDecoder);
+static assert(isPushSource!MadDecoder);
