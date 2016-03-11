@@ -2,7 +2,7 @@
 module flod.etc.mad;
 
 import flod.pipeline;
-import flod.traits : check;
+import flod.traits;
 
 ///
 auto decodeMp3(Pipeline)(auto ref Pipeline pipeline)
@@ -12,6 +12,7 @@ auto decodeMp3(Pipeline)(auto ref Pipeline pipeline)
 
 private:
 
+@pullSink!ubyte @pushSource!ubyte
 struct MadDecoder(Source, Sink) {
 	import deimos.mad;
 	static assert(mad_decoder.sizeof == 88);
@@ -150,5 +151,3 @@ struct MadDecoder(Source, Sink) {
 			throw exception;
 	}
 }
-
-enum ch = check!("peek", "push", MadDecoder);
