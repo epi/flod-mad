@@ -12,8 +12,9 @@ auto decodeMp3(Pipeline)(auto ref Pipeline pipeline)
 
 private:
 
-@peekSink!ubyte @pushSource!ubyte
+@peekSink!ubyte @allocSource!ubyte
 struct MadDecoder(Source, Sink) {
+	import std.exception : enforce;
 	import deimos.mad;
 	static assert(mad_decoder.sizeof == 88);
 
@@ -98,8 +99,8 @@ struct MadDecoder(Source, Sink) {
 
 			if (nsamples > 0) {
 				size_t size = short.sizeof * nchannels * nsamples;
-				auto buf = new ubyte[size];
-				//auto buf = sink.alloc(size);
+				ubyte[] buf;
+				enforce(sink.alloc(buf, size));
 				size_t i = 0;
 				while (nsamples--) {
 					int sample = scale(*left_ch++);
@@ -111,8 +112,7 @@ struct MadDecoder(Source, Sink) {
 						buf[i++] = (sample >> 8) & 0xff;
 					}
 				}
-				sink.push(buf);
-				//sink.commit(size);
+				sink.commit(size);
 			}
 		} catch (Throwable e) {
 			exception = e;
