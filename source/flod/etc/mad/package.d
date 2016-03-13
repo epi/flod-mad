@@ -12,7 +12,7 @@ auto decodeMp3(Pipeline)(auto ref Pipeline pipeline)
 
 private:
 
-@pullSink!ubyte @pushSource!ubyte
+@peekSink!ubyte @pushSource!ubyte
 struct MadDecoder(Source, Sink) {
 	import deimos.mad;
 	static assert(mad_decoder.sizeof == 88);
