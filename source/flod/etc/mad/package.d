@@ -10,16 +10,14 @@ auto decodeMp3(Pipeline)(auto ref Pipeline pipeline)
 	return pipeline.pipe!MadDecoder;
 }
 
-private:
-
-@peekSink!ubyte @allocSource!ubyte
-struct MadDecoder(Source, Sink) {
+@filter!ubyte(Method.peek, Method.alloc)
+private struct MadDecoder(alias Context, A...) {
 	import std.exception : enforce;
 	import deimos.mad;
 	static assert(mad_decoder.sizeof == 88);
 
-	Source source;
-	Sink sink;
+	mixin Context!A;
+
 	const(void)* bufferStart = null;
 	size_t chunkSize = 4096;
 
@@ -96,7 +94,6 @@ struct MadDecoder(Source, Sink) {
 			nsamples  = pcm.length;
 			left_ch   = pcm.samples[0].ptr;
 			right_ch  = pcm.samples[1].ptr;
-
 			if (nsamples > 0) {
 				size_t size = short.sizeof * nchannels * nsamples;
 				ubyte[] buf;
